@@ -13,7 +13,7 @@ Find the SELECT YOUR VERSION section below to adjust for target
 Made by Joel Murphy and Leif Percifield 2016 and on
 www.github.com/OpenHAK
 
-			Issue with file size due to DFU set at dual bank
+			Issue with file size due to DFU set default to dual bank
 			For OTA bootloader bank size adjust go here
 			Library/Arduino15/packages/OpenHAK/hardware/Simblee/1.1.4/variants/Simblee/ota_bootloader.h
 			based on advice from https://devzone.nordicsemi.com/f/nordic-q-a/19339/dfu-ota-giving-error-upload-failed-remote-dfu-data-size-exceeds-limit-while-flashing-application
@@ -43,7 +43,7 @@ int minutesOffset = 0;
 signed char timeZoneOffset = 0;
 
 QuickStats stats; //initialize an instance of stats class
-MicroOLED oled(OLED_RESET, DC);    // reset pin, I2C address
+MicroOLED oled(OLED_RESET, DC);    // reset pin, I2C address mask, from library
 String bpmString = "";
 String VERSION = "0.1.0";
 

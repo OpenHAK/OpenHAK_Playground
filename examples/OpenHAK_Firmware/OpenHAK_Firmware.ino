@@ -12,8 +12,8 @@
 
   Made by Joel Murphy and Leif Percifield 2016 and on
   www.github.com/OpenHAK
-	
-	      Issue with file size due to DFU set at dual bank
+
+	      Issue with file size due to DFU set default to dual bank
 	      For OTA bootloader bank size adjust go here
 	      Library/Arduino15/packages/OpenHAK/hardware/Simblee/1.1.4/variants/Simblee/ota_bootloader.h
 	      based on advice from https://devzone.nordicsemi.com/f/nordic-q-a/19339/dfu-ota-giving-error-upload-failed-remote-dfu-data-size-exceeds-limit-while-flashing-application
@@ -29,12 +29,7 @@
 #include <ota_bootloader.h>
 #include <SimbleeBLE.h>
 #include <Wire.h>
-/*
- *  Issue with file size due to DFU set at dual bank
- *  For OTA bootloader bank size adjust go here
- *  Library/Arduino15/packages/OpenHAK/hardware/Simblee/1.1.4/variants/Simblee/ota_bootloader.h
- *  based on advice from https://devzone.nordicsemi.com/f/nordic-q-a/19339/dfu-ota-giving-error-upload-failed-remote-dfu-data-size-exceeds-limit-while-flashing-application
- */
+
 
  // SELECT YOUR VERSION
  #define BETA_2019 1
