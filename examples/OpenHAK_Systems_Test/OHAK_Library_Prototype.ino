@@ -18,7 +18,6 @@ byte BMI160_readRegister(byte reg){
   while(Wire.available()){
     inByte = Wire.read();
   }
-  Wire.endTransmission(true);
  return inByte;
 }
 
@@ -34,7 +33,6 @@ short BMI160_read16bit(byte startReg){
     inByte[byteCounter] = Wire.read();
     byteCounter++;
   }
-  Wire.endTransmission(true);
   shorty = (inByte[0]<<8) | inByte[1];
  return shorty;
 }
@@ -61,7 +59,7 @@ void BMI160_writeRegister(byte reg, byte setting){
    * PW_69, PW_118, PW_215, PW_411
  * LED Current
    * 0 - 50mA
- * 
+ *
  *  Sample Average effects Sample Rate
    *  sa of 4 and sr of 400 = actual sample rate of 100
  *  Pulse Width effects resolution
@@ -111,7 +109,7 @@ void getMAXdeviceInfo(){
   if(DEBUG){ Serial.print("MAX rev: 0x");
     Serial.println(revID,HEX);
     Serial.print("MAX part ID: 0x");
-    Serial.println(partID,HEX); 
+    Serial.println(partID,HEX);
   }
 }
 
@@ -252,8 +250,7 @@ void readFIFOdata(){
     dataByte[byteCounter] = Wire.read();
     byteCounter++;
   }
-  Wire.endTransmission(true);
-  REDvalue = 0L; 
+  REDvalue = 0L;
   REDvalue = (dataByte[0] & 0xFF); REDvalue <<= 8;
   REDvalue |= dataByte[1]; REDvalue <<= 8;
   REDvalue |= dataByte[2];
@@ -364,7 +361,6 @@ byte MAX30102_readRegister(byte reg){
   while(Wire.available()){
     inByte = Wire.read();
   }
-  Wire.endTransmission(true);
  return inByte;
 }
 
@@ -381,7 +377,6 @@ short MAX30102_readShort(byte startReg){
     inByte[byteCounter] = Wire.read();
     byteCounter++;
   }
-  Wire.endTransmission(true);
   shorty = (inByte[0]<<8) | inByte[1];
  return shorty;
 }
@@ -393,26 +388,22 @@ void printAllRegisters(){
   Wire.endTransmission(false);
   Wire.requestFrom(MAX_ADD,7);
   readWireAndPrintHex(STATUS_1);
-  Wire.endTransmission(true);
   Wire.beginTransmission(MAX_ADD);
   Wire.write(FIFO_CONFIG);
   Wire.endTransmission(false);
   Wire.requestFrom(MAX_ADD,11);
   readWireAndPrintHex(FIFO_CONFIG);
-  Wire.endTransmission(true);
   Wire.beginTransmission(MAX_ADD);
   Wire.write(TEMP_INT);
   Wire.endTransmission(false);
   Wire.requestFrom(MAX_ADD,3);
   readWireAndPrintHex(TEMP_INT);
-  Wire.endTransmission(true);
 
   Wire.beginTransmission(MAX_ADD);
   Wire.write(REV_ID);
   Wire.endTransmission(false);
   Wire.requestFrom(MAX_ADD,2);
   readWireAndPrintHex(REV_ID);
-  Wire.endTransmission(true);
 }
 
 // helps to print out register values
@@ -421,7 +412,7 @@ void readWireAndPrintHex(byte startReg){
   while(Wire.available()){
     inByte = Wire.read();
     printRegName(startReg); startReg++;
-    Serial.print("0x"); 
+    Serial.print("0x");
     if(inByte < 0x10){ Serial.print("0"); }
     Serial.println(inByte,HEX);
   }
