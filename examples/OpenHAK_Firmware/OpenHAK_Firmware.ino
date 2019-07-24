@@ -20,6 +20,12 @@
 
 */
 
+
+ // SELECT YOUR VERSION
+ #define BETA_TESTER 1	// use this for the 2019 beta hardware
+ // #define BIO_VILLAGE_BADGE 1	// use this for the BioHacking Village Badge for DEFCON 27
+
+
 #include "OpenHAK_Playground.h"
 #include <filters.h>
 #include <BMI160Gen.h>
@@ -29,12 +35,6 @@
 #include <ota_bootloader.h>
 #include <SimbleeBLE.h>
 #include <Wire.h>
-
-
- // SELECT YOUR VERSION
- #define BETA_2019 1
- // #define BIO_VILLAGE_BADGE 1
-
 
 Lazarus Lazarus;
 
@@ -128,7 +128,7 @@ uint8_t advdata[14] =
   0x43, // 'C' // 12
   0x4f, // 'O' // 13
 };
-
+char ble_address[4];
 // FILTER SEUTP
 boolean useFilter = true;
 float HPfilterOutput = 0.0;
@@ -153,6 +153,9 @@ void setup()
     getBatteryVoltage();
 #endif
   String stringy =  String(getDeviceIdLow(), HEX);
+	for(int i=0; i<3; i++){
+		if(ble_address.charAt(i) > 90){ ble_address.charAt(i) -= 32; }
+	}
   advdata[10] = (uint8_t)stringy.charAt(0);
   advdata[11] = (uint8_t)stringy.charAt(1);
   advdata[12] = (uint8_t)stringy.charAt(2);
@@ -170,6 +173,7 @@ void setup()
   SimbleeBLE.begin();
   for(int i=0; i<3; i++){
     pinMode(LEDpin[i],OUTPUT); analogWrite(LEDpin[i],255); // Enable RGB and turn them off
+		ble_address[i] = stringy.charAt(i);	// do this here, why not?
   }
 
 /*

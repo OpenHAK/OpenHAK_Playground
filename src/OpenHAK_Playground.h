@@ -6,17 +6,16 @@
 
 #ifndef OPENHAK_PLAYGROUND_H
 #define OPENHAK_PLAYGROUND_H
-
-// #include // PUT INCLUDES HERE
+#endif
 
 /*
   control bytes and register definitions for controling stuff
 */
 
-//#define SERIAL_LOG 1
+//#define SERIAL_LOG 1	// use for debuging etc
 
 //  SIMBLEE PINS
-#ifdef BETA_2019 1
+#ifdef BETA_TESTER
 	#define RED 24        // red part of LED
 	#define GRN 23        // green part of LED
 	#define BLU 20        // blue part of LED
@@ -31,7 +30,7 @@
 	#define V_SENSE 5     // Digital 5, AnalogIn 6 measure Battery Level with this pin
 #endif
 
-#ifdef BIO_VILLAGE_BADGE 1
+#ifdef BIO_VILLAGE_BADGE
 	#define RED 20        // red part of LED
 	#define GRN 4         // green part of LED
 	#define BLU 6         // blue part of LED

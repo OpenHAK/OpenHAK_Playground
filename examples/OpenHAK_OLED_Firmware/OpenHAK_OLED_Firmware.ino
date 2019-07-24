@@ -7,10 +7,10 @@ UNLESS, THAT IS, YOU HAVE AN OpenHAK LAYING AROUND
 WYSIWYG. NO GUARANTEES OR WARANTEES.
 
 This code targets the OpenHAK BETA hardware.
-Also will target the Biohacking Village DEFCON 27 Badge
+Also targets the Biohacking Village DEFCON 27 Badge
 Find the SELECT YOUR VERSION section below to adjust for target
 
-Made by Joel Murphy and Leif Percifield 2016 and on
+Made by Joel Murphy and Leif Percifield 2016 and on and on
 www.github.com/OpenHAK
 
 			Issue with file size due to DFU set default to dual bank
@@ -20,6 +20,9 @@ www.github.com/OpenHAK
 
 
 */
+// SELECT YOUR VERSION
+// #define BETA_TESTER 1	// use this for the 2019 beta hardware
+#define BIO_VILLAGE_BADGE 1	// use this for the BioHacking Village Badge for DEFCON 27
 
 #include "OpenHAK_Playground.h"
 #include <filters.h>
@@ -32,9 +35,6 @@ www.github.com/OpenHAK
 #include <Wire.h>
 #include <OpenHAK_MicroOLED.h>
 
-// SELECT YOUR VERSION
-#define BETA_2019 1
-// #define BIO_VILLAGE_BADGE 1
 
 Lazarus Lazarus;
 
@@ -45,7 +45,7 @@ signed char timeZoneOffset = 0;
 QuickStats stats; //initialize an instance of stats class
 MicroOLED oled(OLED_RESET, DC);    // reset pin, I2C address mask, from library
 String bpmString = "";
-String VERSION = "0.1.0";
+String VERSION = "1.0.0";
 
   //  TESTING
 #ifdef SERIAL_LOG
@@ -130,6 +130,7 @@ uint8_t advdata[14] =
   0x43, // 'C' // 12
   0x4f, // 'O' // 13
 };
+String ble_address;
 
 // FILTER SEUTP
 boolean useFilter = true;
@@ -157,11 +158,14 @@ void setup()
 
   splashOLED();
 
-  String stringy =  String(getDeviceIdLow(), HEX);
-  advdata[10] = (uint8_t)stringy.charAt(0);
-  advdata[11] = (uint8_t)stringy.charAt(1);
-  advdata[12] = (uint8_t)stringy.charAt(2);
-  advdata[13] = (uint8_t)stringy.charAt(3);
+  ble_address =  String(getDeviceIdLow(), HEX);
+	for(int i=0; i<3; i++){
+		if(ble_address.charAt(i) > 90){ ble_address.charAt(i) -= 32; }
+	}
+  advdata[10] = (uint8_t)ble_address.charAt(0);
+  advdata[11] = (uint8_t)ble_address.charAt(1);
+  advdata[12] = (uint8_t)ble_address.charAt(2);
+  advdata[13] = (uint8_t)ble_address.charAt(3);
   SimbleeBLE_advdata = advdata;
   SimbleeBLE_advdata_len = sizeof(advdata);
   SimbleeBLE.advertisementData = "OpenHAK";
@@ -221,6 +225,7 @@ setTime(DEFAULT_TIME);
   delay(400);digitalWrite(BLU, HIGH);
 #endif
 
+delay(2000);
 }
 
 //void bmi160_intr(void)
@@ -267,7 +272,7 @@ void loop()
 #ifdef SERIAL_LOG
       Serial.println("Starting HR capture");
 #endif
-      printOLED("Measuring Heart Rate",true);
+      printOLED("Capturing Heart Rate",true);
 			resetPulseVariables();
       getTempFlag = true;
 			enableMAX30101(true);
@@ -339,7 +344,12 @@ void loop()
 #ifdef SERIAL_LOG
       Serial.println("Enter modeNum 10");
 #endif
-      printOLED("Sync me :)",false);  // add the advertised hex identifier
+			String sync = String("Sync me :)       ");
+			sync.setCharAt(13,ble_address.charAt(0));
+			sync.setCharAt(14,ble_address.charAt(1));
+			sync.setCharAt(15,ble_address.charAt(2));
+			sync.setCharAt(16,ble_address.charAt(3));
+      printOLED(sync,false);  // add the advertised hex identifier
       delay(1000);
       Simblee_ULPDelay(10000);
       break;
