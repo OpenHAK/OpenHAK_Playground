@@ -153,9 +153,7 @@ void setup()
     getBatteryVoltage();
 #endif
   String stringy =  String(getDeviceIdLow(), HEX);
-	for(int i=0; i<3; i++){
-		if(ble_address.charAt(i) > 90){ ble_address.charAt(i) -= 32; }
-	}
+  ble_address.toUpperCase();
   advdata[10] = (uint8_t)stringy.charAt(0);
   advdata[11] = (uint8_t)stringy.charAt(1);
   advdata[12] = (uint8_t)stringy.charAt(2);
