@@ -10,11 +10,11 @@
   Also will target the Biohacking Village DEFCON 27 Badge
 	Find the SELECT YOUR VERSION section below to adjust for target
 
-  Made by Joel Murphy and Leif Percifield 2016 and on
+  Made by Joel Murphy and Leif Percifield 2016 and on and on
   www.github.com/OpenHAK
 
 	      Issue with file size due to DFU set default to dual bank
-	      For OTA bootloader bank size adjust go here
+	      To adjust OTA bootloader bank size adjust go here
 	      Library/Arduino15/packages/OpenHAK/hardware/Simblee/1.1.4/variants/Simblee/ota_bootloader.h
 	      based on advice from https://devzone.nordicsemi.com/f/nordic-q-a/19339/dfu-ota-giving-error-upload-failed-remote-dfu-data-size-exceeds-limit-while-flashing-application
 
@@ -80,6 +80,17 @@ byte writePointer;
 byte ovfCounter;
 uint8_t arrayBeats[100];
 int beatCounter;
+
+
+long lastTime;
+long awakeTime;
+int sleepTimeNow;
+uint32_t startTime;
+#ifndef SERIAL_LOG
+int sleepTime = 600; //600 is production
+#else
+int sleepTime = 60; //600 is production
+#endif
 
 
 uint8_t modeNum = 10;
@@ -152,7 +163,7 @@ void setup()
     Serial.println("getting battery...");
     getBatteryVoltage();
 #endif
-  String stringy =  String(getDeviceIdLow(), HEX);
+  ble_address =  String(getDeviceIdLow(), HEX);
   ble_address.toUpperCase();
   advdata[10] = (uint8_t)stringy.charAt(0);
   advdata[11] = (uint8_t)stringy.charAt(1);
@@ -171,7 +182,6 @@ void setup()
   SimbleeBLE.begin();
   for(int i=0; i<3; i++){
     pinMode(LEDpin[i],OUTPUT); analogWrite(LEDpin[i],255); // Enable RGB and turn them off
-		ble_address[i] = stringy.charAt(i);	// do this here, why not?
   }
 
 /*
@@ -255,8 +265,10 @@ void loop()
       Serial.print("Time since last here "); Serial.println(thisTestTime - thatTestTime);
       thatTestTime = thisTestTime;
 #endif
-      utc = now();  // This works to keep time incrementing that we send to the phone
-      localTime = utc + (minutesOffset/60); // This does not work to keep track of time we pring on screen??
+	updateTime();
+      lastTime = millis();
+//      utc = now();  // This works to keep time incrementing that we send to the phone
+//      localTime = utc + (minutesOffset/60); // This does not work to keep track of time we pring on screen??
       samples[currentSample].epoch = utc;  // Send utc time to the phone. Phone will manage timezone, etc.
       samples[currentSample].steps = BMI160.getStepCount();
       memset(arrayBeats, 0, sizeof(arrayBeats));
@@ -297,7 +309,9 @@ void loop()
       Serial.print("Samples Captured: ");
       Serial.println(currentSample);
 #endif
-      sleepNow();
+      awakeTime = millis() - lastTime;
+      sleepTimeNow = sleepTime - (HR_TIME / 1000);
+      sleepNow(sleepTimeNow);
       break;
     case 1: // modeNum 1 SEEMS TO CAPTURE THE HEART RATE DATA AND NOT DO ANYTHING TO IT
 #ifdef SERIAL_LOG
@@ -315,7 +329,8 @@ void loop()
       Serial.println("Enter modeNum 2");
 #endif
       modeNum = 0;
-      sleepNow();
+      sleepTimeNow = sleepTime - (HR_TIME / 1000);
+      sleepNow(sleepTimeNow);
       break;
     case 3: // modeNum 3 TRANSFERS SAMPLES
 #ifdef SERIAL_LOG
@@ -328,21 +343,23 @@ void loop()
       Serial.println("Enter modeNum 10");
 #endif
       //modeNum = 0;
-//      digitalWrite(RED, LOW);
-      Simblee_ULPDelay(10000);
+      digitalWrite(RED, LOW);
+      delay(10);
+      sleepNow(10);
+
       break;
   }
 }
 
 
 
-void sleepNow() {
+void sleepNow(long timeNow) {
   analogWrite(RED, 255);
   analogWrite(GRN, 255);  // shut down LEDs
   analogWrite(BLU, 255);
   enableMAX30101(false);  // shut down MAX
   long sleepTimeNow = SLEEP_TIME - HR_TIME;
-  Simblee_ULPDelay(MILLISECONDS(sleepTimeNow));
+  Simblee_ULPDelay(SECONDS(timeNow));
 }
 
 
@@ -391,4 +408,11 @@ uint8_t getBatteryVoltage() {
 #endif
     returnVal = byte(volts/BATT_VOLT_CONST); // convert to byte for OTA data transfer
     return returnVal;
+}
+
+void updateTime(){
+    TimeChangeRule localCR = {"TCR", First, Sun, Nov, 2, minutesOffset};
+    Timezone localZone(localCR, localCR);
+    utc = now();    //current time from the Time Library
+    localTime = localZone.toLocal(utc);
 }

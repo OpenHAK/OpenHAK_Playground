@@ -18,6 +18,7 @@
 #ifdef OLED_PRESENT
   #include <OpenHAK_MicroOLED.h>
   MicroOLED oled(OLED_RESET, DC);    // reset pin, I2C address mask, from library
+	boolean inverse = false;
 #endif
 
 //This line added by Chip 2016-09-28 to enable plotting by Arduino Serial Plotter
@@ -77,7 +78,7 @@ void setup(){
     pinMode(LEDpin[i],OUTPUT); analogWrite(LEDpin[i],255); // Enable RGB and turn them off
   }
 #ifdef OLED_PRESENT
-    splashOLED();
+    splashOLED(inverse);
 #endif
 
   LED_blinkTimer = LED_fadeTimer = millis();
@@ -140,13 +141,19 @@ void loop(){
     rainbowLEDs();
   }else{
     analogWrite(RED,180);
-    delay(300);
+		inverse = !inverse;
+		splashOLED(inverse);
+    delay(1000);
     analogWrite(RED,255);
     analogWrite(GRN,180);
-    delay(300);
+		inverse = !inverse;
+		splashOLED(inverse);
+    delay(1000);
     analogWrite(GRN,255);
     analogWrite(BLU,180);
-    delay(300);
+		inverse = !inverse;
+		splashOLED(inverse);
+    delay(1000);
     analogWrite(BLU,255);
   }
   eventSerial();

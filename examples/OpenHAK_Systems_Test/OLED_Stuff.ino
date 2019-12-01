@@ -1,12 +1,12 @@
 
 
-void splashOLED(){
+void splashOLED(boolean inv){
     oled.begin();    // Initialize the OLED
     oled.flipHorizontal(true);
     oled.flipVertical(true);
     oled.clear(ALL); // Clear the display's internal memory
     oled.clear(PAGE); // Clear the buffer.
-
+		if(inv){ oled.invert(true); }
     oled.setFontType(FONT_8x16);
     oled.setCursor(0, 0);
     oled.print("OpenHAK");
